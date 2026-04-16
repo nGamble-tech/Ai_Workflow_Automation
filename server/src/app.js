@@ -3,6 +3,7 @@ import cors from "cors";
 import pool from "./config/db.js";
 import workflowRoutes from "./routes/workflowRoutes.js";
 import nodeRoutes from "./routes/nodeRoutes.js";
+import edgeRoutes from "./routes/edgeRoutes.js";
 
 const app = express();
 
@@ -28,5 +29,6 @@ app.get("/api/health", async (req, res) => {
 
 app.use("/api/workflows", workflowRoutes);
 app.use("/api", nodeRoutes);
+app.use("/api", edgeRoutes);
 
 export default app;
