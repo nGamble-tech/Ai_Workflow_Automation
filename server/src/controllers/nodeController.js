@@ -1,3 +1,5 @@
+//CRUD logic for nodes
+
 import * as nodeModel from "../models/nodeModel.js";
 import { getWorkflowById } from "../models/workflowModel.js";
 

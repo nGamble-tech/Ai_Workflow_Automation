@@ -1,3 +1,6 @@
+//Server starter
+
+import { json } from "express";
 import app from "./app.js";
 
 

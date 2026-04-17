@@ -1,3 +1,5 @@
+//Db querys of edges 
+
 import pool from "../config/db.js";
 
 export async function createEdge({

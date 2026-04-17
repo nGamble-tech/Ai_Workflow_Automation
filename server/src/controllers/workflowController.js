@@ -1,3 +1,5 @@
+// CRUD logic to making, displaying, updating and deleting workflows and graphs
+
 import {
   createWorkflow,
   getAllWorkflows,
@@ -5,6 +7,8 @@ import {
   updateWorkflow,
   deleteWorkflow,
 } from "../models/workflowModel.js";
+import { getNodesByWorkflowId } from "../models/nodeModel.js";
+import { getEdgesByWorkflowId } from "../models/edgeModel.js";
 
 // temporary hardcoded user id for development
 const TEST_USER_ID = "53d2cf8c-5684-4e6d-9dab-b4243f186caa";
@@ -97,5 +101,33 @@ export async function deleteWorkflowHandler(req, res) {
   } catch (error) {
     console.error("Delete workflow error:", error.message);
     res.status(500).json({ message: "Failed to delete workflow" });
+  }
+}
+
+//Full workflow framework call
+export async function getWorkflowGraph(req, res) {
+  try {
+    const { id } = req.params;
+
+    const workflow = await getWorkflowById(id, TEST_USER_ID);
+
+    if (!workflow) {
+      return res.status(404).json({ message: "Workflow not found" });
+    }
+
+    const nodes = await getNodesByWorkflowId(id);
+    const edges = await getEdgesByWorkflowId(id);
+
+    res.json({
+      workflow,
+      nodes,
+      edges,
+    });
+  } catch (error) {
+    console.error("Get workflow graph error:", error);
+    res.status(500).json({
+      message: "Failed to fetch workflow graph",
+      error: error.message,
+    });
   }
 }
