@@ -549,6 +549,30 @@ http://localhost:3232/api/edges/EdgeId
 
 ---
 
+# 5. Graph Route
+
+The graph endpoint returns the full workflow structure, including:
+
+- workflow metadata
+- all nodes in the workflow
+- all edges connecting the nodes
+
+This is the most important endpoint for rendering a workflow visually.
+
+---
+
+## GET `/api/workflows/:id/graph`
+
+Fetches the complete workflow graph in a single request.
+
+### Full URL Example
+
+```text
+http://localhost:5000/api/workflows/WorkflowId/graph
+```
+
+---
+
 # Suggested Manual Test Flow
 
 Use this exact order for a clean end to end test:
@@ -692,6 +716,14 @@ Delete workflow if needed:
 DELETE /api/workflows/:id
 ```
 
+## Step 14
+
+Get graph:
+
+```text
+GET /api/workflows/:id/graph
+```
+
 ---
 
 # Common Troubleshooting
@@ -758,22 +790,7 @@ That means:
 
 After the current routes, the next likely backend additions are:
 
-- graph retrieval endpoint
 - auth routes
 - protected routes
 - execution routes
 - execution step logging routes
-
-A future graph endpoint will likely look like this:
-
-## GET `/api/workflows/:id/graph`
-
-Expected future response shape:
-
-```json
-{
-  "workflow": {},
-  "nodes": [],
-  "edges": []
-}
-```

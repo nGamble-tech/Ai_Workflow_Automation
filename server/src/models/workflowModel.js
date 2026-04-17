@@ -1,3 +1,5 @@
+//Db querys of workflows
+
 import pool from "../config/db.js";
 
 export async function createWorkflow({ userId, name, description }) {

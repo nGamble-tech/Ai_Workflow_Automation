@@ -1,3 +1,5 @@
+//Route connection for workflows and graphs
+
 import express from "express";
 import {
   createWorkflowHandler,
@@ -5,14 +7,17 @@ import {
   getWorkflowByIdHandler,
   updateWorkflowHandler,
   deleteWorkflowHandler,
+  getWorkflowGraph,
 } from "../controllers/workflowController.js";
 
 const router = express.Router();
 
 router.get("/", getAllWorkflowsHandler);
+router.get("/:id/graph", getWorkflowGraph);
 router.get("/:id", getWorkflowByIdHandler);
 router.post("/", createWorkflowHandler);
 router.put("/:id", updateWorkflowHandler);
 router.delete("/:id", deleteWorkflowHandler);
+
 
 export default router;

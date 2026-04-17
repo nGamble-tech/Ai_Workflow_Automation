@@ -32,14 +32,14 @@ Webhook Trigger → AI Analyze Text → Condition Check → Action Output
 - health check API route
 - workflow CRUD routes
 - node CRUD routes
+- edge CRUD routes
 
 ### In progress
 
-- edge CRUD
-- graph retrieval endpoint
-- authentication
-- workflow execution engine
-- frontend workflow builder
+1. Auth
+2. Protected routes
+3. Execution engine
+4. Frontend builder
 
 ## Tech Stack
 

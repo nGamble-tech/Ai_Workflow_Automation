@@ -1,3 +1,5 @@
+// CRUD logic for edges
+
 import * as edgeModel from "../models/edgeModel.js";
 import { getWorkflowById } from "../models/workflowModel.js";
 import { getNodeById } from "../models/nodeModel.js";

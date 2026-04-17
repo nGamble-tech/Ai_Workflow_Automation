@@ -1,3 +1,5 @@
+//Db querys of nodes
+
 import pool from "../config/db.js";
 
 export async function createNode({
