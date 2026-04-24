@@ -1,6 +1,7 @@
 //Route connection for workflows and graphs
 
 import express from "express";
+import { requireAuth } from "../middleware/authMiddleware.js";
 import {
   createWorkflowHandler,
   getAllWorkflowsHandler,
@@ -11,6 +12,8 @@ import {
 } from "../controllers/workflowController.js";
 
 const router = express.Router();
+
+router.use(requireAuth);
 
 router.get("/", getAllWorkflowsHandler);
 router.get("/:id/graph", getWorkflowGraph);

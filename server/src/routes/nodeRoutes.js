@@ -1,4 +1,5 @@
 import express from "express";
+import { requireAuth } from "../middleware/authMiddleware.js";
 import {
   createNode,
   getNodes,
@@ -7,6 +8,7 @@ import {
 } from "../controllers/nodeController.js";
 
 const router = express.Router();
+router.use(requireAuth);
 
 router.get("/workflows/:workflowId/nodes", getNodes);
 router.post("/workflows/:workflowId/nodes", createNode);

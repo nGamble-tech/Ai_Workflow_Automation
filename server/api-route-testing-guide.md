@@ -786,11 +786,348 @@ That means:
 
 ---
 
-# Next Planned API Additions
+# Testing Protected Routes With JWT
 
-After the current routes, the next likely backend additions are:
+After auth is added, workflow, node, edge, and graph routes should require a JWT token.
 
-- auth routes
-- protected routes
-- execution routes
-- execution step logging routes
+That means these routes now need the Authorization header:
+
+```text
+Authorization: Bearer YOUR_TOKEN_HERE
+```
+
+Protected routes include:
+
+```text
+GET    /api/workflows
+GET    /api/workflows/:id
+GET    /api/workflows/:id/graph
+POST   /api/workflows
+PUT    /api/workflows/:id
+DELETE /api/workflows/:id
+
+GET    /api/workflows/:workflowId/nodes
+POST   /api/workflows/:workflowId/nodes
+PUT    /api/nodes/:nodeId
+DELETE /api/nodes/:nodeId
+
+GET    /api/workflows/:workflowId/edges
+POST   /api/workflows/:workflowId/edges
+DELETE /api/edges/:edgeId
+```
+
+---
+
+# Suggested Auth Test Flow
+
+## Step 1
+
+Register a new user:
+
+```text
+POST /api/auth/register
+```
+
+Save the returned token.
+
+## Step 2
+
+Test the current user route:
+
+```text
+GET /api/auth/me
+```
+
+Add the Authorization header:
+
+```text
+Authorization: Bearer YOUR_TOKEN_HERE
+```
+
+## Step 3
+
+Create a workflow with the token:
+
+```text
+POST /api/workflows
+```
+
+Headers:
+
+```text
+Authorization: Bearer YOUR_TOKEN_HERE
+Content-Type: application/json
+```
+
+Body:
+
+```json
+{
+  "name": "Authenticated Workflow",
+  "description": "Created using a real JWT-authenticated user"
+}
+```
+
+## Step 4
+
+Get all workflows with the token:
+
+```text
+GET /api/workflows
+```
+
+## Step 5
+
+Create nodes, edges, and graph requests using the same token.
+
+---
+
+# Auth Middleware Troubleshooting
+
+## Register or login returns `"Authorization token required"`
+
+Register and login should be public.
+
+Check `authRoutes.js`.
+
+It should look like this:
+
+```js
+router.post("/register", register);
+router.post("/login", login);
+router.get("/me", requireAuth, getMe);
+```
+
+Do not put this at the top of `authRoutes.js`:
+
+```js
+router.use(requireAuth);
+```
+
+That would accidentally protect register and login.
+
+---
+
+## Protected route returns `"Authorization token required"`
+
+Make sure the request includes this header:
+
+```text
+Authorization: Bearer YOUR_TOKEN_HERE
+```
+
+In Postman:
+
+1. Go to the Authorization tab.
+2. Set Type to `Bearer Token`.
+3. Paste the token without the word `Bearer`.
+
+Or manually add a header:
+
+```text
+Key: Authorization
+Value: Bearer YOUR_TOKEN_HERE
+```
+
+---
+
+## Token works for `/auth/me` but protected resource returns no data
+
+This usually means the authenticated user does not own the data being requested.
+
+After replacing `TEST_USER_ID` with `req.user.id`, each user only sees their own workflows, nodes, and edges.
+
+If you created old workflows under the temporary test user, your new logged-in user will not see them.
+
+Create new workflows after logging in.
+
+---
+
+## Token says invalid or expired
+
+Check:
+
+- `JWT_SECRET` exists in `.env`
+- server was restarted after changing `.env`
+- token was copied correctly
+- token was created by the same backend using the same secret
+
+Example `.env`:
+
+```env
+JWT_SECRET="your_super_secret_jwt_key"
+JWT_EXPIRES_IN=7d
+```
+
+# Testing Protected Routes With JWT
+
+After auth is added, workflow, node, edge, and graph routes should require a JWT token.
+
+That means these routes now need the Authorization header:
+
+```text
+Authorization: Bearer YOUR_TOKEN_HERE
+```
+
+Protected routes include:
+
+```text
+GET    /api/workflows
+GET    /api/workflows/:id
+GET    /api/workflows/:id/graph
+POST   /api/workflows
+PUT    /api/workflows/:id
+DELETE /api/workflows/:id
+
+GET    /api/workflows/:workflowId/nodes
+POST   /api/workflows/:workflowId/nodes
+PUT    /api/nodes/:nodeId
+DELETE /api/nodes/:nodeId
+
+GET    /api/workflows/:workflowId/edges
+POST   /api/workflows/:workflowId/edges
+DELETE /api/edges/:edgeId
+```
+
+---
+
+# Suggested Auth Test Flow
+
+## Step 1
+
+Register a new user:
+
+```text
+POST /api/auth/register
+```
+
+Save the returned token.
+
+## Step 2
+
+Test the current user route:
+
+```text
+GET /api/auth/me
+```
+
+Add the Authorization header:
+
+```text
+Authorization: Bearer YOUR_TOKEN_HERE
+```
+
+## Step 3
+
+Create a workflow with the token:
+
+```text
+POST /api/workflows
+```
+
+Headers:
+
+```text
+Authorization: Bearer YOUR_TOKEN_HERE
+Content-Type: application/json
+```
+
+Body:
+
+```json
+{
+  "name": "Authenticated Workflow",
+  "description": "Created using a real JWT-authenticated user"
+}
+```
+
+## Step 4
+
+Get all workflows with the token:
+
+```text
+GET /api/workflows
+```
+
+## Step 5
+
+Create nodes, edges, and graph requests using the same token.
+
+---
+
+# Auth Middleware Troubleshooting
+
+## Register or login returns `"Authorization token required"`
+
+Register and login should be public.
+
+Check `authRoutes.js`.
+
+It should look like this:
+
+```js
+router.post("/register", register);
+router.post("/login", login);
+router.get("/me", requireAuth, getMe);
+```
+
+Do not put this at the top of `authRoutes.js`:
+
+```js
+router.use(requireAuth);
+```
+
+That would accidentally protect register and login.
+
+---
+
+## Protected route returns `"Authorization token required"`
+
+Make sure the request includes this header:
+
+```text
+Authorization: Bearer YOUR_TOKEN_HERE
+```
+
+In Postman:
+
+1. Go to the Authorization tab.
+2. Set Type to `Bearer Token`.
+3. Paste the token without the word `Bearer`.
+
+Or manually add a header:
+
+```text
+Key: Authorization
+Value: Bearer YOUR_TOKEN_HERE
+```
+
+---
+
+## Token works for `/auth/me` but protected resource returns no data
+
+This usually means the authenticated user does not own the data being requested.
+
+After replacing `TEST_USER_ID` with `req.user.id`, each user only sees their own workflows, nodes, and edges.
+
+If you created old workflows under the temporary test user, your new logged-in user will not see them.
+
+Create new workflows after logging in.
+
+---
+
+## Token says invalid or expired
+
+Check:
+
+- `JWT_SECRET` exists in `.env`
+- server was restarted after changing `.env`
+- token was copied correctly
+- token was created by the same backend using the same secret
+
+Example `.env`:
+
+```env
+JWT_SECRET="your_super_secret_jwt_key"
+JWT_EXPIRES_IN=7d
+```
