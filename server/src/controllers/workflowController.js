@@ -10,8 +10,7 @@ import {
 import { getNodesByWorkflowId } from "../models/nodeModel.js";
 import { getEdgesByWorkflowId } from "../models/edgeModel.js";
 
-// temporary hardcoded user id for development
-const TEST_USER_ID = "53d2cf8c-5684-4e6d-9dab-b4243f186caa";
+
 
 export async function createWorkflowHandler(req, res) {
   try {
@@ -22,7 +21,7 @@ export async function createWorkflowHandler(req, res) {
     }
 
     const workflow = await createWorkflow({
-      userId: TEST_USER_ID,
+      userId: req.user.id,
       name: name.trim(),
       description: description?.trim() || null,
     });
@@ -36,7 +35,7 @@ export async function createWorkflowHandler(req, res) {
 
 export async function getAllWorkflowsHandler(req, res) {
   try {
-    const workflows = await getAllWorkflows(TEST_USER_ID);
+    const workflows = await getAllWorkflows(req.user.id);
     res.json(workflows);
   } catch (error) {
     console.error("Get workflows error:", error.message);
@@ -48,7 +47,7 @@ export async function getWorkflowByIdHandler(req, res) {
   try {
     const { id } = req.params;
 
-    const workflow = await getWorkflowById(id, TEST_USER_ID);
+    const workflow = await getWorkflowById(id, req.user.id);
 
     if (!workflow) {
       return res.status(404).json({ message: "Workflow not found" });
@@ -70,7 +69,7 @@ export async function updateWorkflowHandler(req, res) {
       return res.status(400).json({ message: "Workflow name is required" });
     }
 
-    const updatedWorkflow = await updateWorkflow(id, TEST_USER_ID, {
+    const updatedWorkflow = await updateWorkflow(id, req.user.id, {
       name: name.trim(),
       description: description?.trim() || null,
       is_active: typeof is_active === "boolean" ? is_active : true,
@@ -91,7 +90,7 @@ export async function deleteWorkflowHandler(req, res) {
   try {
     const { id } = req.params;
 
-    const deletedWorkflow = await deleteWorkflow(id, TEST_USER_ID);
+    const deletedWorkflow = await deleteWorkflow(id, req.user.id);
 
     if (!deletedWorkflow) {
       return res.status(404).json({ message: "Workflow not found" });
@@ -109,7 +108,7 @@ export async function getWorkflowGraph(req, res) {
   try {
     const { id } = req.params;
 
-    const workflow = await getWorkflowById(id, TEST_USER_ID);
+    const workflow = await getWorkflowById(id, req.user.id);
 
     if (!workflow) {
       return res.status(404).json({ message: "Workflow not found" });

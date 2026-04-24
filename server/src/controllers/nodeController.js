@@ -3,8 +3,7 @@
 import * as nodeModel from "../models/nodeModel.js";
 import { getWorkflowById } from "../models/workflowModel.js";
 
-// temporary until auth is added
-const TEST_USER_ID = "53d2cf8c-5684-4e6d-9dab-b4243f186caa";
+
 
 export async function createNode(req, res) {
   try {
@@ -15,7 +14,7 @@ export async function createNode(req, res) {
       return res.status(400).json({ message: "type and label are required" });
     }
 
-    const workflow = await getWorkflowById(workflowId, TEST_USER_ID);
+    const workflow = await getWorkflowById(workflowId, req.user.id);
 
      console.log("CREATE NODE DEBUG:", {
       workflowId,
@@ -50,7 +49,7 @@ export async function getNodes(req, res) {
   try {
     const { workflowId } = req.params;
 
-    const workflow = await getWorkflowById(workflowId, TEST_USER_ID);
+    const workflow = await getWorkflowById(workflowId, req.user.id);
 
     if (!workflow) {
       return res.status(404).json({ message: "Workflow not found" });

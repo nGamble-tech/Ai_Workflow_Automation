@@ -4,8 +4,7 @@ import * as edgeModel from "../models/edgeModel.js";
 import { getWorkflowById } from "../models/workflowModel.js";
 import { getNodeById } from "../models/nodeModel.js";
 
-// temporary until auth is added
-const TEST_USER_ID = "53d2cf8c-5684-4e6d-9dab-b4243f186caa";
+
 
 export async function createEdge(req, res) {
   try {
@@ -24,7 +23,7 @@ export async function createEdge(req, res) {
       });
     }
 
-    const workflow = await getWorkflowById(workflowId, TEST_USER_ID);
+    const workflow = await getWorkflowById(workflowId, req.user.id);
 
     if (!workflow) {
       return res.status(404).json({ message: "Workflow not found" });
@@ -66,7 +65,7 @@ export async function getEdges(req, res) {
   try {
     const { workflowId } = req.params;
 
-    const workflow = await getWorkflowById(workflowId, TEST_USER_ID);
+    const workflow = await getWorkflowById(workflowId, req.user.id);
 
     if (!workflow) {
       return res.status(404).json({ message: "Workflow not found" });
