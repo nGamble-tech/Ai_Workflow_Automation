@@ -5,6 +5,7 @@ import workflowRoutes from "./routes/workflowRoutes.js";
 import nodeRoutes from "./routes/nodeRoutes.js";
 import edgeRoutes from "./routes/edgeRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
+import executionRoutes from "./routes/executionRoutes.js";
 
 const app = express();
 
@@ -33,6 +34,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/workflows", workflowRoutes);
 app.use("/api", nodeRoutes);
 app.use("/api", edgeRoutes);
+app.use("/api", executionRoutes);
 
 
 export default app;
