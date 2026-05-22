@@ -27,9 +27,10 @@ async function executeTriggerNode(node, context) {
 
 async function executeAiNode(node, context) {
   // Mock AI for now. Later we will replace this with a real OpenAI call.
+  //False condition node will always be executed because score is below 80, change as needed for testing
   return {
     aiResult: {
-      score: 87,
+      score: 65,
       summary: "Mock AI analysis completed.",
       promptUsed: node.config?.prompt ?? null,
     },
@@ -55,6 +56,12 @@ async function executeConditionNode(node, context) {
     case "<":
       passed = actualValue < value;
       break;
+    case ">=":
+      passed = actualValue >= value;
+      break;
+    case "<=":
+      passed = actualValue <= value;
+      break;
     case "===":
       passed = actualValue === value;
       break;
@@ -73,6 +80,7 @@ async function executeConditionNode(node, context) {
       actual: actualValue,
       passed,
     },
+    conditionPassed: passed,
   };
 }
 
