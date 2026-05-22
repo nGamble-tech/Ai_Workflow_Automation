@@ -9,7 +9,7 @@ import { getNodeById } from "../models/nodeModel.js";
 export async function createEdge(req, res) {
   try {
     const { workflowId } = req.params;
-    const { source_node_id, target_node_id } = req.body;
+    const { source_node_id, target_node_id, condition } = req.body;
 
     if (!source_node_id || !target_node_id) {
       return res.status(400).json({
@@ -49,6 +49,7 @@ export async function createEdge(req, res) {
       workflowId,
       source_node_id,
       target_node_id,
+      condition,
     });
 
     res.status(201).json(edge);

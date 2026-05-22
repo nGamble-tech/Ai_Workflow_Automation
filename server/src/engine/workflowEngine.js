@@ -122,8 +122,20 @@ function getNextNode(currentNode, nodes, edges, context) {
     return null;
   }
 
-  // V1: follow the first outgoing edge.
-  // Later, condition nodes can choose true/false branches.
+  if (currentNode.type === "condition") {
+    const desiredCondition = context.conditionPassed ? "true" : "false";
+
+    const matchingEdge = outgoingEdges.find(
+      (edge) => edge.condition === desiredCondition
+    );
+
+    if (!matchingEdge) {
+      return null;
+    }
+
+    return nodes.find((node) => node.id === matchingEdge.target_node_id) ?? null;
+  }
+
   const nextEdge = outgoingEdges[0];
 
   return nodes.find((node) => node.id === nextEdge.target_node_id) ?? null;
