@@ -14,6 +14,15 @@ export async function register(req, res) {
 
     const normalizedEmail = email.trim().toLowerCase();
 
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(normalizedEmail)) {
+      return res.status(400).json({ message: "Invalid email format" });
+    }
+
+    if (password.length < 8) {
+      return res.status(400).json({ message: "Password must be at least 8 characters" });
+    }
+
     const existingUser = await getUserByEmail(normalizedEmail);
 
     if (existingUser) {

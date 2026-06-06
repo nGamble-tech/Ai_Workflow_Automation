@@ -3,6 +3,30 @@
 import * as nodeModel from "../models/nodeModel.js";
 import { getWorkflowById } from "../models/workflowModel.js";
 
+const VALID_NODE_TYPES = ["trigger", "ai", "condition", "action"];
+const VALID_OPERATORS = [">", "<", ">=", "<=", "===", "!=="];
+
+function validateNodeInput(type, label, config) {
+  if (!type || !label) {
+    return "type and label are required";
+  }
+
+  if (!VALID_NODE_TYPES.includes(type)) {
+    return `type must be one of: ${VALID_NODE_TYPES.join(", ")}`;
+  }
+
+  if (type === "condition") {
+    if (!config?.field || !config?.operator || config?.value === undefined) {
+      return "condition nodes require config with field, operator, and value";
+    }
+    if (!VALID_OPERATORS.includes(config.operator)) {
+      return `operator must be one of: ${VALID_OPERATORS.join(", ")}`;
+    }
+  }
+
+  return null;
+}
+
 
 
 export async function createNode(req, res) {
@@ -10,20 +34,12 @@ export async function createNode(req, res) {
     const { workflowId } = req.params;
     const { type, label, config, position_x, position_y } = req.body;
 
-    if (!type || !label) {
-      return res.status(400).json({ message: "type and label are required" });
+    const validationError = validateNodeInput(type, label, config);
+    if (validationError) {
+      return res.status(400).json({ message: validationError });
     }
 
     const workflow = await getWorkflowById(workflowId, req.user.id);
-
-     console.log("CREATE NODE DEBUG:", {
-      workflowId,
-      type,
-      label,
-      config,
-      position_x,
-      position_y,
-    });
 
     if (!workflow) {
       return res.status(404).json({ message: "Workflow not found" });
@@ -68,8 +84,9 @@ export async function updateNode(req, res) {
     const { nodeId } = req.params;
     const { type, label, config, position_x, position_y } = req.body;
 
-    if (!type || !label) {
-      return res.status(400).json({ message: "type and label are required" });
+    const validationError = validateNodeInput(type, label, config);
+    if (validationError) {
+      return res.status(400).json({ message: validationError });
     }
 
     const updatedNode = await nodeModel.updateNode(nodeId, {
