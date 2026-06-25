@@ -33,14 +33,13 @@ Webhook Trigger → AI Analyze Text → Condition Check → Action Output
 - workflow CRUD routes
 - node CRUD routes
 - edge CRUD routes
-- Auth
-- Protected Routes
-- Execution Engine
-- Full Anthropic API call
 
 ### In progress
 
-1. Frontend builder
+1. Auth
+2. Protected routes
+3. Execution engine
+4. Frontend builder
 
 ## Tech Stack
 
