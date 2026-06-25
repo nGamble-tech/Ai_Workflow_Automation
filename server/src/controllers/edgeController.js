@@ -9,7 +9,7 @@ import { getNodeById } from "../models/nodeModel.js";
 export async function createEdge(req, res) {
   try {
     const { workflowId } = req.params;
-    const { source_node_id, target_node_id } = req.body;
+    const { source_node_id, target_node_id, condition } = req.body;
 
     if (!source_node_id || !target_node_id) {
       return res.status(400).json({
@@ -45,10 +45,19 @@ export async function createEdge(req, res) {
       });
     }
 
+    if (sourceNode.type === "condition") {
+      if (!condition || (condition !== "true" && condition !== "false")) {
+        return res.status(400).json({
+          message: 'Edges from condition nodes require condition to be "true" or "false"',
+        });
+      }
+    }
+
     const edge = await edgeModel.createEdge({
       workflowId,
       source_node_id,
       target_node_id,
+      condition,
     });
 
     res.status(201).json(edge);

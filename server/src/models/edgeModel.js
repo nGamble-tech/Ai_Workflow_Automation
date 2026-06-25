@@ -6,12 +6,13 @@ export async function createEdge({
   workflowId,
   source_node_id,
   target_node_id,
+  condition,
 }) {
   const result = await pool.query(
-    `INSERT INTO edges (workflow_id, source_node_id, target_node_id)
-     VALUES ($1, $2, $3)
+    `INSERT INTO edges (workflow_id, source_node_id, target_node_id, condition)
+     VALUES ($1, $2, $3, $4)
      RETURNING *`,
-    [workflowId, source_node_id, target_node_id]
+    [workflowId, source_node_id, target_node_id, condition ?? null]
   );
 
   return result.rows[0];

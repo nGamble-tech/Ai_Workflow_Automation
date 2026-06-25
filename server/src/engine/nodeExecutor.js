@@ -1,3 +1,7 @@
+import Anthropic from "@anthropic-ai/sdk";
+
+const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+
 export async function executeNode(node, context) {
   switch (node.type) {
     case "trigger":
@@ -26,11 +30,35 @@ async function executeTriggerNode(node, context) {
 }
 
 async function executeAiNode(node, context) {
-  // Mock AI for now. Later we will replace this with a real OpenAI call.
+  const systemPrompt =
+    node.config?.prompt ??
+    "You are a helpful AI assistant embedded in a workflow automation system.";
+
+  const userMessage = `Workflow context:\n${JSON.stringify(context, null, 2)}\n\nAnalyze the above context. Your response must be a single raw JSON object with no markdown, no code fences, no extra text — just the JSON:\n{"score": <0-100>, "summary": "<2-3 sentence analysis>"}`;
+
+  const response = await anthropic.messages.create({
+    model: "claude-opus-4-8",
+    max_tokens: 1024,
+    thinking: { type: "adaptive" },
+    system: systemPrompt,
+    messages: [{ role: "user", content: userMessage }],
+  });
+
+  const textBlock = response.content.find((b) => b.type === "text");
+  const rawText = textBlock?.text ?? "{}";
+
+  let parsed;
+  try {
+    const cleaned = rawText.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "").trim();
+    parsed = JSON.parse(cleaned);
+  } catch {
+    parsed = { score: 0, summary: rawText };
+  }
+
   return {
     aiResult: {
-      score: 87,
-      summary: "Mock AI analysis completed.",
+      score: parsed.score ?? 0,
+      summary: parsed.summary ?? rawText,
       promptUsed: node.config?.prompt ?? null,
     },
   };
@@ -55,6 +83,12 @@ async function executeConditionNode(node, context) {
     case "<":
       passed = actualValue < value;
       break;
+    case ">=":
+      passed = actualValue >= value;
+      break;
+    case "<=":
+      passed = actualValue <= value;
+      break;
     case "===":
       passed = actualValue === value;
       break;
@@ -73,6 +107,7 @@ async function executeConditionNode(node, context) {
       actual: actualValue,
       passed,
     },
+    conditionPassed: passed,
   };
 }
 
